@@ -1,0 +1,17 @@
+#ifndef _CURSES_INCLUDE_HEADER_IN_
+#define _CURSES_INCLUDE_HEADER_IN_
+#cmakedefine CURSES_HAVE_CURSES_H
+#cmakedefine CURSES_HAVE_NCURSES_H
+#cmakedefine CURSES_HAVE_NCURSES_CURSES_H
+#cmakedefine CURSES_HAVE_NCURSES_NCURSES_H
+#endif
+
+#ifdef CURSES_HAVE_NCURSES_H
+#include "ncurses.h"
+#elif defined CURSES_HAVE_NCURSES_NCURSES_H
+#include "ncurses/ncurses.h"
+#elif defined CURSES_HAVE_NCURSES_CURSES_H
+#include "ncurses/curses.h"
+#elif defined CURSES_HAVE_CURSES_H
+#include "curses.h"
+#endif
