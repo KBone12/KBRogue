@@ -2,6 +2,9 @@
 #define _PLYER_HEADER_PP_KBROGUE_
 
 #include <bitset>
+#include <memory>
+
+#include "spdlog/spdlog.h"
 
 namespace kb
 {
@@ -19,6 +22,7 @@ namespace kb
 			private:
 				int x, y;
 				std::bitset<4> moveFlags;		// 0: left, 1: down, 2: up, 3: right
+				std::shared_ptr<spdlog::logger> logger;
 		};
 	}
 }

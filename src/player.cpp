@@ -1,12 +1,12 @@
 #include "player.hpp"
 
 #include "curses_include.h"
+#include "spdlog/spdlog.h"
 
 using kb::rogue::Player;
 
-Player::Player() : x(0), y(0)
-{
-}
+Player::Player() : x(0), y(0), logger(spdlog::get("logger"))
+{}
 
 void Player::keyInput(int key)
 {
@@ -49,6 +49,11 @@ void Player::update(int delta)
 	if (moveFlags[1])	++y;
 	if (moveFlags[2])	--y;
 	if (moveFlags[3])	++x;
+
+	if (moveFlags.any())
+	{
+		SPDLOG_DEBUG(logger, "Player moves to ({0}, {1})", x, y);
+	}
 
 	moveFlags.reset();
 }
