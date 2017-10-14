@@ -9,6 +9,8 @@ namespace kb
 {
 	namespace rogue
 	{
+		class Map;
+
 		class KBRogue
 		{
 			public:
@@ -21,8 +23,15 @@ namespace kb
 				void start();
 				void finalize();
 
+				std::shared_ptr<Map> getCurrentMap() const
+				{
+					return currentMap;
+				}
+
 			private:
 				std::shared_ptr<spdlog::logger> logger;
+				std::vector<std::shared_ptr<Map>> maps;
+				std::shared_ptr<Map> currentMap;
 		};
 	}
 }

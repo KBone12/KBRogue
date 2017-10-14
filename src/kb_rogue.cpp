@@ -5,6 +5,7 @@
 #include "curses_include.h"
 #include "spdlog/spdlog.h"
 
+#include "map.hpp"
 #include "player.hpp"
 #include "timer.hpp"
 
@@ -42,8 +43,12 @@ void KBRogue::start()
 	logger->info("Start game loop.");
 	bool quit = false;
 	int c;
-	kb::rogue::Player player;
 	kb::rogue::FpsTimer fps(30);
+	maps.push_back(std::make_shared<Map>(1, 1));
+	currentMap = maps.at(0);
+	kb::rogue::Player player(this, 2, 2);
+
+	currentMap->initialize("resource/map/map0");
 
 	fps.start();
 	while (!quit)
@@ -68,6 +73,7 @@ void KBRogue::start()
 		player.update(fps.getDelta());
 
 		clear();
+		currentMap->render();
 		player.render();
 
 #ifdef DEBUG

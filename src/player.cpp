@@ -3,9 +3,16 @@
 #include "curses_include.h"
 #include "spdlog/spdlog.h"
 
+#include "collision.hpp"
+#include "kb_rogue.hpp"
+#include "map.hpp"
+
 using kb::rogue::Player;
 
-Player::Player() : x(0), y(0), logger(spdlog::get("logger"))
+Player::Player(const KBRogue* kbRogue, int x0, int y0) : game(kbRogue), x(x0), y(y0), logger(spdlog::get("logger"))
+{}
+
+Player::~Player() noexcept
 {}
 
 void Player::keyInput(int key)
@@ -43,16 +50,39 @@ void Player::keyInput(int key)
 	}
 }
 
-void Player::update(int delta)
+void Player::update(int)
 {
-	if (moveFlags[0])	--x;
-	if (moveFlags[1])	++y;
-	if (moveFlags[2])	--y;
-	if (moveFlags[3])	++x;
+	x0 = game->getCurrentMap()->getX0();
+	y0 = game->getCurrentMap()->getY0();
+
+	if (moveFlags[0]
+			&& !CollisionDetector::collision(x - x0 - 1, y - y0,
+				game->getCurrentMap()))
+	{
+		--x;
+	}
+	if (moveFlags[1]
+			&& !CollisionDetector::collision(x - x0, y - y0 + 1,
+				game->getCurrentMap()))
+	{
+		++y;
+	}
+	if (moveFlags[2]
+			&& !CollisionDetector::collision(x - x0, y - y0 - 1,
+				game->getCurrentMap()))
+	{
+		--y;
+	}
+	if (moveFlags[3]
+			&& !CollisionDetector::collision(x - x0 + 1, y - y0,
+				game->getCurrentMap()))
+	{
+		++x;
+	}
 
 	if (moveFlags.any())
 	{
-		SPDLOG_DEBUG(logger, "Player moves to ({0}, {1})", x, y);
+		SPDLOG_DEBUG(logger, "Player moves to ({0}, {1})", x - x0, y - y0);
 	}
 
 	moveFlags.reset();

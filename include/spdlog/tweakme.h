@@ -124,7 +124,7 @@
 // mode with recent compilers. See GCC's documentation for -Wsuggest-final-types
 // for instance.
 //
-// #define SPDLOG_FINAL final
+ #define SPDLOG_FINAL final
 ///////////////////////////////////////////////////////////////////////////////
 
 
