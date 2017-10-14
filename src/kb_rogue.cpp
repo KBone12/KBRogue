@@ -48,8 +48,6 @@ void KBRogue::start()
 	fps.start();
 	while (!quit)
 	{
-		clear();
-
 		/*
 		 * Key inputs
 		 */
@@ -69,10 +67,11 @@ void KBRogue::start()
 		fps.update();
 		player.update(fps.getDelta());
 
+		clear();
 		player.render();
 
 #ifdef DEBUG
-		mvprintw(0, 0, "%f", fps.getFps());
+		mvprintw(0, 0, "%.1f", fps.getFps());
 #endif /* DEBUG */
 
 		refresh();

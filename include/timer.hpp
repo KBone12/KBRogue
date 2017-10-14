@@ -28,8 +28,8 @@ namespace kb
 
 			private:
 				const int fps;
-				std::chrono::high_resolution_clock::time_point t1, t2, t3;
-				int sleepTime, remainder, delta;
+				std::chrono::high_resolution_clock::time_point t1, t2, t3, t4;
+				int sleepTime, remainder, delta, sleepDelta;
 				int counter;
 				std::chrono::milliseconds time_sum;
 				double measuredFps;
