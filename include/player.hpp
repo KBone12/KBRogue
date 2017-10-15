@@ -16,6 +16,12 @@ namespace kb
 		class Player
 		{
 			public:
+				/**
+				 * Throws a spdlog::spdlog_ex when spdlog can't initialize
+				 *
+				 * x0: player's initial position x
+				 * y0: player's initial position y
+				 */
 				Player(const KBRogue* kbRogue, int x0 = 0, int y0 = 0);
 				~Player() noexcept;
 
@@ -35,7 +41,7 @@ namespace kb
 
 			private:
 				const KBRogue* game;
-				int x0, y0;		// origin
+				int mapX0, mapY0;		// map origin
 				int x, y;
 				std::bitset<4> moveFlags;		// 0: left, 1: down, 2: up, 3: right
 				std::shared_ptr<spdlog::logger> logger;

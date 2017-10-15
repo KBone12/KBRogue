@@ -29,6 +29,7 @@ void FpsTimer::update()
 	t1 = high_resolution_clock::now();
 	delta = duration_cast<milliseconds>(t1 - t4).count();
 
+	// Calculate the number of frames per second
 	time_sum += milliseconds(delta);
 	if (++counter == fps)
 	{

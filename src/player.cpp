@@ -52,29 +52,29 @@ void Player::keyInput(int key)
 
 void Player::update(int)
 {
-	x0 = game->getCurrentMap()->getX0();
-	y0 = game->getCurrentMap()->getY0();
+	mapX0 = game->getCurrentMap()->getX0();
+	mapY0 = game->getCurrentMap()->getY0();
 
 	if (moveFlags[0]
-			&& !CollisionDetector::collision(x - x0 - 1, y - y0,
+			&& !CollisionDetector::collision(x - mapX0 - 1, y - mapY0,
 				game->getCurrentMap()))
 	{
 		--x;
 	}
 	if (moveFlags[1]
-			&& !CollisionDetector::collision(x - x0, y - y0 + 1,
+			&& !CollisionDetector::collision(x - mapX0, y - mapY0 + 1,
 				game->getCurrentMap()))
 	{
 		++y;
 	}
 	if (moveFlags[2]
-			&& !CollisionDetector::collision(x - x0, y - y0 - 1,
+			&& !CollisionDetector::collision(x - mapX0, y - mapY0 - 1,
 				game->getCurrentMap()))
 	{
 		--y;
 	}
 	if (moveFlags[3]
-			&& !CollisionDetector::collision(x - x0 + 1, y - y0,
+			&& !CollisionDetector::collision(x - mapX0 + 1, y - mapY0,
 				game->getCurrentMap()))
 	{
 		++x;
@@ -82,9 +82,9 @@ void Player::update(int)
 
 	if (moveFlags.any())
 	{
-		SPDLOG_DEBUG(logger, "Player moves to ({0}, {1})", x - x0, y - y0);
+		SPDLOG_DEBUG(logger,
+				"Player moves to ({0}, {1})", x - mapX0, y - mapY0);
 	}
-
 	moveFlags.reset();
 }
 

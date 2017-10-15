@@ -11,6 +11,9 @@ namespace kb
 		class Map
 		{
 			public:
+				/**
+				 * Throws a spdlog::spdlog_ex when spdlog can't initialize
+				 */
 				Map(int x0, int y0);
 
 				void initialize(const std::string& filePath = "resouce/map/test");

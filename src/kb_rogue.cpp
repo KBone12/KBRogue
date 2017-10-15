@@ -23,6 +23,7 @@ KBRogue::KBRogue() : logger(spdlog::rotating_logger_mt("logger", "logs/log", 102
 void KBRogue::initialize()
 {
 	logger->info("Initalization phase.");
+
 	std::setlocale(LC_ALL, "");		// For non-ascii characters
 	SPDLOG_DEBUG(logger, "Set environment variables 'LC_ALL' to \"\".");
 
@@ -41,6 +42,7 @@ void KBRogue::initialize()
 void KBRogue::start()
 {
 	logger->info("Start game loop.");
+
 	bool quit = false;
 	int c;
 	kb::rogue::FpsTimer fps(30);
@@ -50,12 +52,11 @@ void KBRogue::start()
 
 	currentMap->initialize("resource/map/map0");
 
+	// Game loop
 	fps.start();
 	while (!quit)
 	{
-		/*
-		 * Key inputs
-		 */
+		// Key inuputs
 		while ((c = getch()) != ERR)
 		{
 			switch (c)
@@ -69,9 +70,11 @@ void KBRogue::start()
 			player.keyInput(c);
 		}
 
+		// Updating
 		fps.update();
 		player.update(fps.getDelta());
 
+		// Rendering
 		clear();
 		currentMap->render();
 		player.render();
@@ -80,6 +83,7 @@ void KBRogue::start()
 		mvprintw(0, 0, "%.1f", fps.getFps());
 #endif /* DEBUG */
 
+		// Reflecting to stdscr & sleeping
 		refresh();
 		fps.sleep();
 	}
@@ -90,6 +94,7 @@ void KBRogue::start()
 void KBRogue::finalize()
 {
 	logger->info("Finalization phase.");
+
 	endwin();
 	SPDLOG_DEBUG(logger, "Ncurses Finalized.");
 
