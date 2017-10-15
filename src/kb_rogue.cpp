@@ -48,9 +48,10 @@ void KBRogue::start()
 	kb::rogue::FpsTimer fps(30);
 	maps.push_back(std::make_shared<Map>(1, 1));
 	currentMap = maps.at(0);
-	kb::rogue::Player player(this, 2, 2);
+	kb::rogue::Player player(*this, '@', 2, 2);
 
 	currentMap->initialize("resource/map/map0");
+	player.initialize();
 
 	// Game loop
 	fps.start();

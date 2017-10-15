@@ -7,13 +7,15 @@
 
 #include "spdlog/spdlog.h"
 
+#include "mob.hpp"
+
 namespace kb
 {
 	namespace rogue
 	{
 		class KBRogue;
 
-		class Player
+		class Player : public Mob
 		{
 			public:
 				/**
@@ -22,29 +24,17 @@ namespace kb
 				 * x0: player's initial position x
 				 * y0: player's initial position y
 				 */
-				Player(const KBRogue* kbRogue, int x0 = 0, int y0 = 0);
-				~Player() noexcept;
+				Player(KBRogue& game, char mark, int x0, int y0);
+				virtual ~Player() = default;
 
+				virtual void initialize() override;
 				void keyInput(int key);
-				void update(int delta);
-				void render();
-
-				int getX() const
-				{
-					return x;
-				}
-
-				int getY() const
-				{
-					return y;
-				}
+				virtual void update(int delta) override;
+				virtual void render() override;
 
 			private:
-				const KBRogue* game;
-				int mapX0, mapY0;		// map origin
-				int x, y;
-				std::bitset<4> moveFlags;		// 0: left, 1: down, 2: up, 3: right
 				std::shared_ptr<spdlog::logger> logger;
+				std::bitset<4> moveFlags;		// 0: left, 1: down, 2: up, 3: right
 		};
 	}
 }

@@ -7,13 +7,16 @@
 #include "kb_rogue.hpp"
 #include "map.hpp"
 
+using kb::rogue::Mob;
 using kb::rogue::Player;
 
-Player::Player(const KBRogue* kbRogue, int x0, int y0) : game(kbRogue), x(x0), y(y0), logger(spdlog::get("logger"))
+Player::Player(KBRogue& game, char mark, int x0, int y0) : Mob(game, mark, x0, y0), logger(spdlog::get("logger"))
 {}
 
-Player::~Player() noexcept
-{}
+void Player::initialize()
+{
+	Mob::initialize();
+}
 
 void Player::keyInput(int key)
 {
@@ -52,30 +55,27 @@ void Player::keyInput(int key)
 
 void Player::update(int)
 {
-	mapX0 = game->getCurrentMap()->getX0();
-	mapY0 = game->getCurrentMap()->getY0();
-
 	if (moveFlags[0]
 			&& !CollisionDetector::collision(x - mapX0 - 1, y - mapY0,
-				game->getCurrentMap()))
+				game.getCurrentMap()))
 	{
 		--x;
 	}
 	if (moveFlags[1]
 			&& !CollisionDetector::collision(x - mapX0, y - mapY0 + 1,
-				game->getCurrentMap()))
+				game.getCurrentMap()))
 	{
 		++y;
 	}
 	if (moveFlags[2]
 			&& !CollisionDetector::collision(x - mapX0, y - mapY0 - 1,
-				game->getCurrentMap()))
+				game.getCurrentMap()))
 	{
 		--y;
 	}
 	if (moveFlags[3]
 			&& !CollisionDetector::collision(x - mapX0 + 1, y - mapY0,
-				game->getCurrentMap()))
+				game.getCurrentMap()))
 	{
 		++x;
 	}
