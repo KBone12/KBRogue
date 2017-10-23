@@ -1,23 +1,25 @@
 #ifndef _MOB_HEADER_PP_KBROGUE_
 #define _MOB_HEADER_PP_KBROGUE_
 
+#include <memory>
+
 namespace kb
 {
 	namespace rogue
 	{
-		class KBRogue;
+		class Map;
 
 		class Mob
 		{
 			public:
 				/**
-				 * x0: entity's initial position x
-				 * y0: entity's initial position y
+				 * x0: entity's initial position x in map coordinate system
+				 * y0: entity's initial position y in map coordinate system
 				 */
-				Mob(KBRogue& game, char mark, int x0, int y0);
+				Mob(const std::shared_ptr<Map>& map, char mark, int x0, int y0);
 				virtual ~Mob() = default;
 
-				virtual void initialize();
+				virtual void initialize() = 0;
 				virtual void update(int delta) = 0;
 				virtual void render() = 0;
 
@@ -37,10 +39,10 @@ namespace kb
 				}
 
 			protected:
-				KBRogue& game;
+				std::shared_ptr<Map> map;
 				char mark;
-				int x, y;
 				int mapX0, mapY0;		// origin
+				int x, y;
 		};
 	}
 }

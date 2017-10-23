@@ -4,18 +4,19 @@
 #include "spdlog/spdlog.h"
 
 #include "collision.hpp"
-#include "kb_rogue.hpp"
 #include "map.hpp"
 
+using kb::rogue::Map;
 using kb::rogue::Mob;
 using kb::rogue::Player;
 
-Player::Player(KBRogue& game, char mark, int x0, int y0) : Mob(game, mark, x0, y0), logger(spdlog::get("logger"))
+Player::Player(const std::shared_ptr<Map>& map, char mark, int x0, int y0)
+	: Mob(map, mark, x0, y0), logger(spdlog::get("logger"))
 {}
 
 void Player::initialize()
 {
-	Mob::initialize();
+	SPDLOG_DEBUG(logger, "Player initialized.");
 }
 
 void Player::keyInput(int key)
@@ -56,26 +57,22 @@ void Player::keyInput(int key)
 void Player::update(int)
 {
 	if (moveFlags[0]
-			&& !CollisionDetector::collision(x - mapX0 - 1, y - mapY0,
-				game.getCurrentMap()))
+			&& !CollisionDetector::collision(x - 1, y, map))
 	{
 		--x;
 	}
 	if (moveFlags[1]
-			&& !CollisionDetector::collision(x - mapX0, y - mapY0 + 1,
-				game.getCurrentMap()))
+			&& !CollisionDetector::collision(x, y + 1, map))
 	{
 		++y;
 	}
 	if (moveFlags[2]
-			&& !CollisionDetector::collision(x - mapX0, y - mapY0 - 1,
-				game.getCurrentMap()))
+			&& !CollisionDetector::collision(x, y - 1, map))
 	{
 		--y;
 	}
 	if (moveFlags[3]
-			&& !CollisionDetector::collision(x - mapX0 + 1, y - mapY0,
-				game.getCurrentMap()))
+			&& !CollisionDetector::collision(x + 1, y, map))
 	{
 		++x;
 	}
@@ -83,12 +80,18 @@ void Player::update(int)
 	if (moveFlags.any())
 	{
 		SPDLOG_DEBUG(logger,
-				"Player moves to ({0}, {1})", x - mapX0, y - mapY0);
+				"Player moved to ({0}, {1})", x, y);
 	}
 	moveFlags.reset();
 }
 
 void Player::render()
 {
-	mvaddch(y, x, '@');
+	mvaddch(y + mapY0, x + mapX0, '@');
+}
+
+void Player::changeCurrentMap(const std::shared_ptr<Map>& map)
+{
+	SPDLOG_DEBUG(logger, "Player moved from the floor{0} to the floor{1}", this->map->getFloorNumber(), map->getFloorNumber());
+	this->map = map;
 }

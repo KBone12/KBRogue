@@ -1,27 +1,45 @@
 #ifndef _MAP_HEADER_PP_KBROGUE_
 #define _MAP_HEADER_PP_KBROGUE_
 
+#include <memory>
 #include <string>
+#include <unordered_map>
 #include <vector>
+
+#include "spdlog/spdlog.h"
 
 namespace kb
 {
 	namespace rogue
 	{
-		class Map
+		class Entity;
+		class Player;
+
+		class Map : public std::enable_shared_from_this<Map>
 		{
 			public:
-				Map(int x0, int y0);
+				Map(const std::string& filePath, int floorNumber, int x0, int y0);
 
 				/**
 				 * Throws a spdlog::spdlog_ex when spdlog can't initialize
 				 */
-				void initialize(const std::string& filePath = "resouce/map/test");
+				void initialize();
+				void update(int delta);
 				void render();
+
+				std::shared_ptr<Map> sharedThis()
+				{
+					return shared_from_this();
+				}
 
 				const std::vector<std::vector<int>>& getCollisionData() const
 				{
 					return collisionData;
+				}
+
+				int getFloorNumber() const
+				{
+					return floorNumber;
 				}
 
 				int getX0() const
@@ -34,16 +52,53 @@ namespace kb
 					return y0;
 				}
 
+				enum MapValue
+				{
+					WALL = -1,
+					FLOOR,
+					DOOR,
+				};
+
 			private:
+				const std::string filePath;
+				std::shared_ptr<spdlog::logger> logger;
+				int floorNumber;
+//				std::unordered_map<std::pair<int, int>, std::shared_ptr<Entity>> entities;
 				std::vector<std::string> data;
-				/*
-				 * -1: Wall
-				 *  0: Floor
-				 *  1: Closed Door
-				 */
 				std::vector<std::vector<int>> collisionData;
 				int x0, y0;		// origin
 				int height;
+		};
+
+		class MapManager
+		{
+			public:
+				MapManager();
+				~MapManager() noexcept;
+
+				void initialize();
+				void keyInput(int key);
+				void update(int delta);
+				void render();
+
+				void addMap(const std::shared_ptr<Map>& map);
+				void changeCurrentMap(const std::shared_ptr<Map>& map);
+				void changeCurrentMap(int floor);
+
+				std::shared_ptr<Map> getCurrentMap() const
+				{
+					return currentMap;
+				}
+
+			private:
+				const std::shared_ptr<Map> EMPTY_MAP;
+				std::shared_ptr<Player> player;
+				/**
+				 * key: this map's floor number
+				 * value: this map's shared pointer
+				 */
+				std::unordered_map<int, std::shared_ptr<Map>> maps;
+				std::shared_ptr<Map> currentMap;
 		};
 	}
 }

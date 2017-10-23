@@ -1,18 +1,12 @@
 #include "entity.hpp"
 
-#include "kb_rogue.hpp"
 #include "map.hpp"
 
 using kb::rogue::Entity;
-using kb::rogue::KBRogue;
+using kb::rogue::Map;
 
-Entity::Entity(KBRogue& game, char mark, int x0, int y0, bool passable)
-	: game(game), mark(mark), x(x0), y(y0), passable(passable)
-{
-}
-
-void Entity::initialize()
-{
-	mapX0 = game.getCurrentMap()->getX0();
-	mapY0 = game.getCurrentMap()->getY0();
-}
+Entity::Entity(const std::shared_ptr<Map>& map, char mark, int x0, int y0, bool passable)
+	: map(map), mark(mark),
+	x(x0), y(y0), mapX0(map->getX0()), mapY0(map->getY0()),
+	passable(passable)
+{}

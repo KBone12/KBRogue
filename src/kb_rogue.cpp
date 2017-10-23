@@ -1,24 +1,23 @@
 #include "kb_rogue.hpp"
 
+#include <algorithm>
 #include <chrono>
 
 #include "curses_include.h"
 #include "spdlog/spdlog.h"
 
 #include "map.hpp"
-#include "player.hpp"
 #include "timer.hpp"
 
 using std::chrono::high_resolution_clock;
 using std::chrono::milliseconds;
 using kb::rogue::KBRogue;
+using kb::rogue::MapManager;
 
-KBRogue::KBRogue() : logger(spdlog::rotating_logger_mt("logger", "logs/log", 1024 * 1024 * 2, 5))
-{
-#ifdef DEBUG
-	logger->set_level(spdlog::level::debug);
-#endif
-}
+KBRogue::KBRogue()
+	: logger(spdlog::get("logger")),
+	mapManager(std::make_shared<MapManager>())
+{}
 
 void KBRogue::initialize()
 {
@@ -37,6 +36,8 @@ void KBRogue::initialize()
 	keypad(stdscr, true);
 	ESCDELAY = 25;
 	SPDLOG_DEBUG(logger, "Completed ncurses initializing.");
+
+	mapManager->initialize();
 }
 
 void KBRogue::start()
@@ -46,12 +47,10 @@ void KBRogue::start()
 	bool quit = false;
 	int c;
 	kb::rogue::FpsTimer fps(30);
-	maps.push_back(std::make_shared<Map>(1, 1));
-	currentMap = maps.at(0);
-	kb::rogue::Player player(*this, '@', 2, 2);
 
-	currentMap->initialize("resource/map/map0");
-	player.initialize();
+	auto startMap = std::make_shared<kb::rogue::Map>("resource/map/map0", 1, 1, 1);
+	mapManager->addMap(startMap);
+	mapManager->changeCurrentMap(startMap);
 
 	// Game loop
 	fps.start();
@@ -68,17 +67,16 @@ void KBRogue::start()
 					break;
 			}
 
-			player.keyInput(c);
+			mapManager->keyInput(c);
 		}
 
 		// Updating
 		fps.update();
-		player.update(fps.getDelta());
+		mapManager->update(fps.getDelta());
 
 		// Rendering
 		clear();
-		currentMap->render();
-		player.render();
+		mapManager->render();
 
 #ifdef DEBUG
 		mvprintw(0, 0, "%.1f", fps.getFps());
@@ -95,6 +93,8 @@ void KBRogue::start()
 void KBRogue::finalize()
 {
 	logger->info("Finalization phase.");
+
+	mapManager.reset();
 
 	endwin();
 	SPDLOG_DEBUG(logger, "Ncurses Finalized.");

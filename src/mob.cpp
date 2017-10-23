@@ -6,13 +6,7 @@
 using kb::rogue::KBRogue;
 using kb::rogue::Mob;
 
-Mob::Mob(KBRogue& game, char mark, int x0, int y0)
-	: game(game), mark(mark), x(x0), y(y0)
-{
-}
-
-void Mob::initialize()
-{
-	mapX0 = game.getCurrentMap()->getX0();
-	mapY0 = game.getCurrentMap()->getY0();
-}
+Mob::Mob(const std::shared_ptr<Map>& map, char mark, int x0, int y0)
+	: map(map), mark(mark),
+	mapX0(map->getX0()), mapY0(map->getY0()), x(x0), y(y0)
+{}

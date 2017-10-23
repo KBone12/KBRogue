@@ -13,24 +13,22 @@ namespace kb
 {
 	namespace rogue
 	{
-		class KBRogue;
+		class Map;
 
 		class Player : public Mob
 		{
 			public:
 				/**
 				 * Throws a spdlog::spdlog_ex when spdlog can't initialize
-				 *
-				 * x0: player's initial position x
-				 * y0: player's initial position y
 				 */
-				Player(KBRogue& game, char mark, int x0, int y0);
+				Player(const std::shared_ptr<Map>& map, char mark, int x0, int y0);
 				virtual ~Player() = default;
 
 				virtual void initialize() override;
 				void keyInput(int key);
 				virtual void update(int delta) override;
 				virtual void render() override;
+				void changeCurrentMap(const std::shared_ptr<Map>& map);
 
 			private:
 				std::shared_ptr<spdlog::logger> logger;
