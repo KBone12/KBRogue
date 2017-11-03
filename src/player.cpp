@@ -4,6 +4,7 @@
 #include "spdlog/spdlog.h"
 
 #include "collision.hpp"
+#include "entity.hpp"
 #include "map.hpp"
 
 using kb::rogue::Map;
@@ -50,6 +51,55 @@ void Player::keyInput(int key)
 		case 'n':
 			moveFlags[3] = true;
 			moveFlags[1] = true;
+			break;
+		case 'o':		// open the door
+			mvaddstr(0, 0, "開けるドアの方向を入力してください。");
+			nodelay(stdscr, false);
+			char direction = getch();
+			int targetX = x, targetY = y;
+			switch (direction)
+			{
+				case 'h':
+					--targetX;
+					break;
+				case 'j':
+					++targetY;
+					break;
+				case 'k':
+					--targetY;
+					break;
+				case 'l':
+					++targetX;
+					break;
+				case 'y':
+					--targetX;
+					--targetY;
+					break;
+				case 'u':
+					++targetX;
+					--targetY;
+					break;
+				case 'b':
+					--targetX;
+					++targetY;
+					break;
+				case 'n':
+					++targetX;
+					++targetY;
+					break;
+			}
+			nodelay(stdscr, true);
+			if (map->getCollisionData()
+					.at(targetY + 1).at(targetX + 1) == Map::H_DOOR
+				|| map->getCollisionData()
+					.at(targetY + 1).at(targetX + 1) == Map::V_DOOR
+				)
+			{
+				if (!map->getEntity(targetX, targetY)->isPassable())
+				{
+					map->getEntity(targetX, targetY)->action();
+				}
+			}
 			break;
 	}
 }

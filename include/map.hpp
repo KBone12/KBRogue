@@ -26,6 +26,7 @@ namespace kb
 				void initialize();
 				void update(int delta);
 				void render();
+				std::shared_ptr<Entity> getEntity(int x, int y);
 
 				std::shared_ptr<Map> sharedThis()
 				{
@@ -56,14 +57,15 @@ namespace kb
 				{
 					WALL = -1,
 					FLOOR,
-					DOOR,
+					H_DOOR,		// horizontal door
+					V_DOOR,		// vertical door
 				};
 
 			private:
 				const std::string filePath;
 				std::shared_ptr<spdlog::logger> logger;
 				int floorNumber;
-//				std::unordered_map<std::pair<int, int>, std::shared_ptr<Entity>> entities;
+				std::vector<std::shared_ptr<Entity>> entities;
 				std::vector<std::string> data;
 				std::vector<std::vector<int>> collisionData;
 				int x0, y0;		// origin

@@ -1,16 +1,11 @@
 #include "kb_rogue.hpp"
 
-#include <algorithm>
-#include <chrono>
-
 #include "curses_include.h"
 #include "spdlog/spdlog.h"
 
 #include "map.hpp"
 #include "timer.hpp"
 
-using std::chrono::high_resolution_clock;
-using std::chrono::milliseconds;
 using kb::rogue::KBRogue;
 using kb::rogue::MapManager;
 
@@ -30,7 +25,7 @@ void KBRogue::initialize()
 	initscr();
 	cbreak();					// Set to raw mode
 	noecho();
-	curs_set(false);			// Hide cursor
+	curs_set(false);			// Hide the cursor
 	nodelay(stdscr, true);
 	intrflush(stdscr, false);
 	keypad(stdscr, true);

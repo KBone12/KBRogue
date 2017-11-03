@@ -1,13 +1,17 @@
 #include "map.hpp"
 
+#include <algorithm>
 #include <fstream>
 #include <sstream>
 
 #include "curses_include.h"
 
 #include "entity.hpp"
+#include "door.hpp"
 #include "player.hpp"
 
+using kb::rogue::Door;
+using kb::rogue::Entity;
 using kb::rogue::Map;
 using kb::rogue::MapManager;
 
@@ -35,33 +39,26 @@ void Map::initialize()
 		SPDLOG_DEBUG(logger, "the file({0}) opened.",
 				filePath + ".collision");
 
-/*
-		for (int y = 0; std::getline(collisionFile, tmp); ++y)
-		{
-			for (int x = 0; std::getline(ss, tmp, ','); ++x)
-			{
-			}
-		}
-*/
-		while (std::getline(collisionFile, tmp))
+		for (int y = -1; std::getline(collisionFile, tmp); ++y)
 		{
 			std::stringstream ss(tmp);
 			collisionData.push_back(std::vector<int>());
-			while (std::getline(ss, tmp, ','))
+			for (int x = -1; std::getline(ss, tmp, ','); ++x)
 			{
 				int mapValue = std::stoi(tmp);
 				collisionData.back().push_back(mapValue);
 
-/*
 				switch (mapValue)
 				{
-					case Map::DOOR:
-						entities.at(std::make_pair(
+					case Map::H_DOOR:
+						entities.push_back(std::make_shared<Door>(sharedThis(), x, y, false, true));
+						break;
+					case Map::V_DOOR:
+						entities.push_back(std::make_shared<Door>(sharedThis(), x, y, false, false));
 						break;
 					default:
 						break;
 				}
-*/
 			}
 		}
 
@@ -93,22 +90,18 @@ void Map::initialize()
 
 	height = data.size();
 
-/*
 	for (const auto& e : entities)
 	{
-		e.second->initialize();
+		e->initialize();
 	}
-*/
 }
 
 void Map::update(int delta)
 {
-/*
 	for (const auto& e : entities)
 	{
-		e.second->update(delta);
+		e->update(delta);
 	}
-*/
 }
 
 void Map::render()
@@ -118,12 +111,25 @@ void Map::render()
 		mvaddstr(y + y0, x0, data.at(y).c_str());
 	}
 
-/*
 	for (const auto& e : entities)
 	{
-		e.second->render();
+		e->render();
 	}
-*/
+}
+
+std::shared_ptr<Entity> Map::getEntity(int x, int y)
+{
+	auto target = std::find_if(entities.begin(), entities.end(),
+					[&](std::shared_ptr<Entity> entity)
+					{
+						return (x == entity->getX())
+						&& (y == entity->getY());
+					});
+	if (target != entities.end())
+	{
+		return *target;
+	}
+	return nullptr;
 }
 
 MapManager::MapManager()
