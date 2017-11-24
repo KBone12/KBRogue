@@ -8,6 +8,10 @@ using kb::rogue::Map;
 
 bool CollisionDetector::collision(const int x, const int y, const std::shared_ptr<Map>& map)
 {
+	if (map->getEntity(x, y))
+		return !map->getEntity(x, y)->isPassable();
+	else if (map->getEnemy(x, y))
+		return true;
 	// Any collisionData has wall around the map
 	switch (map->getCollisionData().at(y + 1).at(x + 1))
 	{
@@ -16,9 +20,6 @@ bool CollisionDetector::collision(const int x, const int y, const std::shared_pt
 		case Map::FLOOR:
 			return false;
 		default:
-			if (map->getEntity(x, y))
-				return !map->getEntity(x, y)->isPassable();
-			else
-				return false;
+			return false;
 	}
 }

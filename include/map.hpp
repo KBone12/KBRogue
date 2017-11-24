@@ -13,6 +13,7 @@ namespace kb
 	namespace rogue
 	{
 		class Entity;
+		class Enemy;
 		class Player;
 
 		class Map : public std::enable_shared_from_this<Map>
@@ -26,7 +27,9 @@ namespace kb
 				void initialize();
 				void update(int delta);
 				void render();
+				void active();
 				std::shared_ptr<Entity> getEntity(int x, int y);
+				std::shared_ptr<Enemy> getEnemy(int x, int y);
 
 				std::shared_ptr<Map> sharedThis()
 				{
@@ -66,6 +69,7 @@ namespace kb
 				std::shared_ptr<spdlog::logger> logger;
 				int floorNumber;
 				std::vector<std::shared_ptr<Entity>> entities;
+				std::vector<std::shared_ptr<Enemy>> enemies;
 				std::vector<std::string> data;
 				std::vector<std::vector<int>> collisionData;
 				int x0, y0;		// origin

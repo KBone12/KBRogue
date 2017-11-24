@@ -106,25 +106,17 @@ void Player::keyInput(int key)
 
 void Player::update(int)
 {
-	if (moveFlags[0]
-			&& !CollisionDetector::collision(x - 1, y, map))
+	int targetX = x;
+	int targetY = y;
+	if (moveFlags[0])	--targetX;
+	if (moveFlags[1])	++targetY;
+	if (moveFlags[2])	--targetY;
+	if (moveFlags[3])	++targetX;
+
+	if (!CollisionDetector::collision(targetX, targetY, map))
 	{
-		--x;
-	}
-	if (moveFlags[1]
-			&& !CollisionDetector::collision(x, y + 1, map))
-	{
-		++y;
-	}
-	if (moveFlags[2]
-			&& !CollisionDetector::collision(x, y - 1, map))
-	{
-		--y;
-	}
-	if (moveFlags[3]
-			&& !CollisionDetector::collision(x + 1, y, map))
-	{
-		++x;
+		x = targetX;
+		y = targetY;
 	}
 
 	if (moveFlags.any())

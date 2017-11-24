@@ -6,11 +6,13 @@
 
 #include "curses_include.h"
 
-#include "entity.hpp"
 #include "door.hpp"
+#include "enemy.hpp"
+#include "entity.hpp"
 #include "player.hpp"
 
 using kb::rogue::Door;
+using kb::rogue::Enemy;
 using kb::rogue::Entity;
 using kb::rogue::Map;
 using kb::rogue::MapManager;
@@ -90,7 +92,14 @@ void Map::initialize()
 
 	height = data.size();
 
-	for (const auto& e : entities)
+	enemies.push_back(std::make_shared<Enemy>(sharedThis(), 'd', 2, 2));
+
+	for (auto& e : entities)
+	{
+		e->initialize();
+	}
+
+	for (auto& e : enemies)
 	{
 		e->initialize();
 	}
@@ -99,6 +108,11 @@ void Map::initialize()
 void Map::update(int delta)
 {
 	for (const auto& e : entities)
+	{
+		e->update(delta);
+	}
+
+	for (auto& e : enemies)
 	{
 		e->update(delta);
 	}
@@ -115,6 +129,34 @@ void Map::render()
 	{
 		e->render();
 	}
+
+	for (const auto& e : enemies)
+	{
+		e->render();
+	}
+}
+
+void Map::active()
+{
+	for (auto& e : enemies)
+	{
+		e->setActive(true);
+	}
+}
+
+std::shared_ptr<Enemy> Map::getEnemy(int x, int y)
+{
+	auto target = std::find_if(enemies.begin(), enemies.end(),
+					[&](std::shared_ptr<Enemy> enemy)
+					{
+						return (x == enemy->getX())
+						&& (y == enemy->getY());
+					});
+	if (target != enemies.end())
+	{
+		return *target;
+	}
+	return nullptr;
 }
 
 std::shared_ptr<Entity> Map::getEntity(int x, int y)
@@ -163,6 +205,7 @@ void MapManager::initialize()
 
 void MapManager::keyInput(int key)
 {
+	if (currentMap)		currentMap->active();
 	player->keyInput(key);
 }
 
