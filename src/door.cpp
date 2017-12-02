@@ -31,12 +31,10 @@ void Door::action()
 	{
 		mark = '+';
 		passable = false;
-//		game.getCurrentMap()->getCollisionData().at(y - mapY0).at(x - mapX0) = 
 	}
 	else
 	{
 		mark = horizontal ? '-' : '|';
 		passable = true;
-//		game.getCurrentMap()->getCollisionData().at(y - mapY0).at(x - mapX0) = 
 	}
 }

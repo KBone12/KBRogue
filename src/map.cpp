@@ -17,8 +17,8 @@ using kb::rogue::Entity;
 using kb::rogue::Map;
 using kb::rogue::MapManager;
 
-Map::Map(const std::string& filePath, int floorNumber, int x0, int y0)
-	: filePath(filePath), logger(spdlog::get("logger")),
+Map::Map(const std::string& filePath, const std::shared_ptr<Player>& player, int floorNumber, int x0, int y0)
+	: filePath(filePath), logger(spdlog::get("logger")), player(player),
 	floorNumber(floorNumber), x0(x0), y0(y0)
 {}
 
@@ -112,6 +112,8 @@ void Map::update(int delta)
 		e->update(delta);
 	}
 
+	player->update(delta);
+
 	for (auto& e : enemies)
 	{
 		e->update(delta);
@@ -120,10 +122,26 @@ void Map::update(int delta)
 
 void Map::render()
 {
+	for (const auto& e : enemies)
+	{
+		if (e->getHp() <= 0)	dead.push_back(e);
+	}
+	for (const auto& d : dead)
+	{
+		auto it = find(enemies.begin(), enemies.end(), d);
+		if (it != enemies.end())
+		{
+			enemies.erase(it);
+		}
+	}
+	dead.clear();
+
 	for (int y = 0; y < height; ++y)
 	{
 		mvaddstr(y + y0, x0, data.at(y).c_str());
 	}
+
+	player->render();
 
 	for (const auto& e : entities)
 	{
@@ -133,14 +151,15 @@ void Map::render()
 	for (const auto& e : enemies)
 	{
 		e->render();
+		if (e->isActive())	e->setActive(false);
 	}
 }
 
-void Map::active()
+void Map::active(bool b)
 {
 	for (auto& e : enemies)
 	{
-		e->setActive(true);
+		e->setActive(b);
 	}
 }
 
@@ -175,7 +194,7 @@ std::shared_ptr<Entity> Map::getEntity(int x, int y)
 }
 
 MapManager::MapManager()
-	: EMPTY_MAP(std::make_shared<Map>("resouce/map/test", 0, 1, 1)),
+	: EMPTY_MAP(std::make_shared<Map>("resouce/map/test", nullptr, 0, 1, 1)),
 	player(std::make_shared<Player>(EMPTY_MAP, '@', 1, 1))
 {
 	maps[0] = EMPTY_MAP;
@@ -205,20 +224,18 @@ void MapManager::initialize()
 
 void MapManager::keyInput(int key)
 {
-	if (currentMap)		currentMap->active();
+	if (currentMap)		currentMap->active(true);
 	player->keyInput(key);
 }
 
 void MapManager::update(int delta)
 {
 	if (currentMap)		currentMap->update(delta);
-	player->update(delta);
 }
 
 void MapManager::render()
 {
 	if (currentMap)		currentMap->render();
-	player->render();
 }
 
 void MapManager::addMap(const std::shared_ptr<Map>& map)

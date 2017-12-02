@@ -19,7 +19,7 @@ namespace kb
 		class Map : public std::enable_shared_from_this<Map>
 		{
 			public:
-				Map(const std::string& filePath, int floorNumber, int x0, int y0);
+				Map(const std::string& filePath, const std::shared_ptr<Player>& player, int floorNumber, int x0, int y0);
 
 				/**
 				 * Throws a spdlog::spdlog_ex when spdlog can't initialize
@@ -27,13 +27,18 @@ namespace kb
 				void initialize();
 				void update(int delta);
 				void render();
-				void active();
+				void active(bool b);
 				std::shared_ptr<Entity> getEntity(int x, int y);
 				std::shared_ptr<Enemy> getEnemy(int x, int y);
 
 				std::shared_ptr<Map> sharedThis()
 				{
 					return shared_from_this();
+				}
+
+				std::shared_ptr<Player> getPlayer() const
+				{
+					return player;
 				}
 
 				const std::vector<std::vector<int>>& getCollisionData() const
@@ -67,9 +72,10 @@ namespace kb
 			private:
 				const std::string filePath;
 				std::shared_ptr<spdlog::logger> logger;
+				std::shared_ptr<Player> player;
 				int floorNumber;
 				std::vector<std::shared_ptr<Entity>> entities;
-				std::vector<std::shared_ptr<Enemy>> enemies;
+				std::vector<std::shared_ptr<Enemy>> enemies, dead;
 				std::vector<std::string> data;
 				std::vector<std::vector<int>> collisionData;
 				int x0, y0;		// origin
@@ -90,6 +96,11 @@ namespace kb
 				void addMap(const std::shared_ptr<Map>& map);
 				void changeCurrentMap(const std::shared_ptr<Map>& map);
 				void changeCurrentMap(int floor);
+
+				std::shared_ptr<Player> getPlayer() const
+				{
+					return player;
+				}
 
 				std::shared_ptr<Map> getCurrentMap() const
 				{

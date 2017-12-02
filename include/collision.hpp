@@ -9,10 +9,21 @@ namespace kb
 	{
 		class Map;
 
+		enum struct CollisionType
+		{
+			UNKNOWN,
+			NONE,
+			WALL,
+			ENTITY_PASSABLE,
+			ENTITY_NOT_PASSABLE,
+			PLAYER,
+			ENEMY
+		};
+
 		class CollisionDetector
 		{
 			public:
-				static bool collision(const int x, const int y, const std::shared_ptr<Map>& map);
+				static CollisionType collision(const int x, const int y, const std::shared_ptr<Map>& map);
 		};
 	}
 }

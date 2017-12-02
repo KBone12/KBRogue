@@ -1,6 +1,8 @@
 #ifndef _ENEMY_HEADER_PP_KBROGUE_
 #define _ENEMY_HEADER_PP_KBROGUE_
 
+#include <random>
+
 #include "mob.hpp"
 
 namespace kb
@@ -32,6 +34,7 @@ namespace kb
 				}
 
 			private:
+				std::mt19937 rand;
 				bool active;
 		};
 	}

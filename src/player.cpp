@@ -4,15 +4,18 @@
 #include "spdlog/spdlog.h"
 
 #include "collision.hpp"
+#include "enemy.hpp"
 #include "entity.hpp"
 #include "map.hpp"
 
+using kb::rogue::CollisionDetector;
+using kb::rogue::CollisionType;
 using kb::rogue::Map;
 using kb::rogue::Mob;
 using kb::rogue::Player;
 
 Player::Player(const std::shared_ptr<Map>& map, char mark, int x0, int y0)
-	: Mob(map, mark, x0, y0), logger(spdlog::get("logger"))
+	: Mob(map, mark, x0, y0, 10), logger(spdlog::get("logger"))
 {}
 
 void Player::initialize()
@@ -113,23 +116,31 @@ void Player::update(int)
 	if (moveFlags[2])	--targetY;
 	if (moveFlags[3])	++targetX;
 
-	if (!CollisionDetector::collision(targetX, targetY, map))
+	auto collision = CollisionDetector::collision(targetX, targetY, map);
+	if (collision == CollisionType::NONE
+			|| collision == CollisionType::ENTITY_PASSABLE)
 	{
 		x = targetX;
 		y = targetY;
-	}
-
-	if (moveFlags.any())
-	{
 		SPDLOG_DEBUG(logger,
 				"Player moved to ({0}, {1})", x, y);
 	}
+	else if (collision == CollisionType::ENEMY)
+	{
+		auto enemy = map->getEnemy(targetX, targetY);
+		enemy->setHp(enemy->getHp() - 1);
+	}
+
 	moveFlags.reset();
 }
 
 void Player::render()
 {
 	mvaddch(y + mapY0, x + mapX0, '@');
+
+#ifdef DEBUG
+	mvprintw(0, 5, "Player={ hp: %d }", hp);
+#endif
 }
 
 void Player::changeCurrentMap(const std::shared_ptr<Map>& map)

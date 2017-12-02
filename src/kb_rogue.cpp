@@ -43,7 +43,7 @@ void KBRogue::start()
 	int c;
 	kb::rogue::FpsTimer fps(30);
 
-	auto startMap = std::make_shared<kb::rogue::Map>("resource/map/map0", 1, 1, 1);
+	auto startMap = std::make_shared<kb::rogue::Map>("resource/map/map0", mapManager->getPlayer(), 1, 1, 1);
 	mapManager->addMap(startMap);
 	mapManager->changeCurrentMap(startMap);
 
