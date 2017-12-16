@@ -2,6 +2,7 @@
 #define _MOB_HEADER_PP_KBROGUE_
 
 #include <memory>
+#include <tuple>
 #include <vector>
 
 namespace kb
@@ -24,6 +25,9 @@ namespace kb
 				virtual void initialize() = 0;
 				virtual void update(int delta) = 0;
 				virtual void render() = 0;
+				void addItem(const std::shared_ptr<Item>& item, int amount);
+				void removeItem(const std::shared_ptr<Item>& item, int amount);
+				std::shared_ptr<Item> getItem(const std::shared_ptr<Item>& item);
 
 				char getMark() const
 				{

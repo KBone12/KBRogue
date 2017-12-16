@@ -15,7 +15,7 @@ namespace kb
 	{
 		class Map;
 
-		class Player : public Mob
+		class Player : public Mob, public std::enable_shared_from_this<Player>
 		{
 			public:
 				/**
@@ -29,6 +29,11 @@ namespace kb
 				virtual void update(int delta) override;
 				virtual void render() override;
 				void changeCurrentMap(const std::shared_ptr<Map>& map);
+
+				std::shared_ptr<Player> sharedThis()
+				{
+					return shared_from_this();
+				}
 
 			private:
 				std::shared_ptr<spdlog::logger> logger;

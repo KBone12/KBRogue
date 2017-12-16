@@ -141,12 +141,12 @@ void Map::render()
 		mvaddstr(y + y0, x0, data.at(y).c_str());
 	}
 
-	player->render();
-
 	for (const auto& e : entities)
 	{
 		e->render();
 	}
+
+	player->render();
 
 	for (const auto& e : enemies)
 	{

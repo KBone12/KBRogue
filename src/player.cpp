@@ -6,6 +6,7 @@
 #include "collision.hpp"
 #include "enemy.hpp"
 #include "entity.hpp"
+#include "herb.hpp"
 #include "map.hpp"
 
 using kb::rogue::CollisionDetector;
@@ -16,7 +17,9 @@ using kb::rogue::Player;
 
 Player::Player(const std::shared_ptr<Map>& map, char mark, int x0, int y0)
 	: Mob(map, mark, x0, y0, 10), logger(spdlog::get("logger"))
-{}
+{
+	items.push_back(std::make_shared<Herb>(10));
+}
 
 void Player::initialize()
 {
@@ -56,51 +59,69 @@ void Player::keyInput(int key)
 			moveFlags[1] = true;
 			break;
 		case 'o':		// open the door
-			mvaddstr(0, 0, "開けるドアの方向を入力してください。");
-			nodelay(stdscr, false);
-			char direction = getch();
-			int targetX = x, targetY = y;
-			switch (direction)
 			{
-				case 'h':
-					--targetX;
-					break;
-				case 'j':
-					++targetY;
-					break;
-				case 'k':
-					--targetY;
-					break;
-				case 'l':
-					++targetX;
-					break;
-				case 'y':
-					--targetX;
-					--targetY;
-					break;
-				case 'u':
-					++targetX;
-					--targetY;
-					break;
-				case 'b':
-					--targetX;
-					++targetY;
-					break;
-				case 'n':
-					++targetX;
-					++targetY;
-					break;
-			}
-			nodelay(stdscr, true);
-			if (map->getCollisionData()
-					.at(targetY + 1).at(targetX + 1) == Map::H_DOOR
-				|| map->getCollisionData()
-					.at(targetY + 1).at(targetX + 1) == Map::V_DOOR
-				)
-			{
-				if (!map->getEntity(targetX, targetY)->isPassable())
+				mvaddstr(0, 0, "開けるドアの方向を入力してください。");
+				nodelay(stdscr, false);
+				char direction = getch();
+				int targetX = x, targetY = y;
+				switch (direction)
 				{
-					map->getEntity(targetX, targetY)->action();
+					case 'h':
+						--targetX;
+						break;
+					case 'j':
+						++targetY;
+						break;
+					case 'k':
+						--targetY;
+						break;
+					case 'l':
+						++targetX;
+						break;
+					case 'y':
+						--targetX;
+						--targetY;
+						break;
+					case 'u':
+						++targetX;
+						--targetY;
+						break;
+					case 'b':
+						--targetX;
+						++targetY;
+						break;
+					case 'n':
+						++targetX;
+						++targetY;
+						break;
+				}
+				nodelay(stdscr, true);
+				if (map->getCollisionData()
+						.at(targetY + 1).at(targetX + 1) == Map::H_DOOR
+					|| map->getCollisionData()
+						.at(targetY + 1).at(targetX + 1) == Map::V_DOOR
+					)
+				{
+					if (!map->getEntity(targetX, targetY)->isPassable())
+					{
+						map->getEntity(targetX, targetY)->action();
+					}
+				}
+			}
+			break;
+		case 'i':
+			{
+				int tmp = 0;
+				mvprintw(0, 0, "何番目のアイテムを使用しますか？[0-%lu)", items.size());
+				nocbreak();
+				nodelay(stdscr, false);
+				scanw("%d", &tmp);
+				cbreak();
+				nodelay(stdscr, true);
+				if (tmp < static_cast<int>(items.size()))
+				{
+					items[tmp]->use({ sharedThis() });
+					removeItem(items[tmp], 1);
 				}
 			}
 			break;
